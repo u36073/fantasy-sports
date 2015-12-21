@@ -30,7 +30,7 @@ def lookup(input_filename, player_output_file, tournament_output_file, id_start,
     output_ids = list()
 
     player_stat_fields = 19
-    tournament_stat_fiels=6
+    tournament_stat_fields=6
 
     if os.path.isfile(player_output_file) is False:
         with codecs.open(player_output_file, "w+", encoding='utf-8') as f:
@@ -45,14 +45,14 @@ def lookup(input_filename, player_output_file, tournament_output_file, id_start,
                 output_ids.append(line.split(",")[0].strip('"'))
                 
                 
-    with codec.open(tournament_output_file, "w+", encoding='utf-8') as f:
+    with codecs.open(tournament_output_file, "w+", encoding='utf-8') as f:
         f.write('name_id')
 
     with codecs.open(input_filename, "r" encoding='utf-8') as f:
         for line in f:
-            input_id=split(",")[0].strip('"')
-            input_name=split(",")[1].strip('"')
-            input_link=split(",")[2].strip('"')
+            input_id=line.split(",")[0].strip('"')
+            input_name=line.split(",")[1].strip('"')
+            input_link=line.split(",")[2].strip('"')
 
             output_rec=list()
 
@@ -61,7 +61,7 @@ def lookup(input_filename, player_output_file, tournament_output_file, id_start,
             output_rec.append(input_link)
 
             try:
-                id_in_range = (int(input_id) >= id_start and int(input_id) <= id_stop)
+                id_in_range = (id_start <= int(input_id) <= id_stop)
             except ValueError:
                 id_in_range = False
 

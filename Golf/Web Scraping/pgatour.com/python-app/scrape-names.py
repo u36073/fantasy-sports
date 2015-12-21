@@ -22,19 +22,20 @@ def write_output(filename, values):
         f.write("\n")
 
 
-def lookup(filename):
+def lookup(filename, href, tour, mode):
     try:
-        with codecs.open(filename, "w+", encoding='utf-8') as f:
-            f.write('"name_id","name","stats_href","lookup_date_time"\n')
+        if mode == "w+":
+            with codecs.open(filename, mode, encoding='utf-8') as f:
+                f.write('"name_id","name","tour","stats_href","lookup_date_time"\n')
 
-        # desired_capabilities = dict()
-        # desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-        # desired_capabilities['unexpectedAlertBehaviour'] = "ignore"
-        # driver = webdriver.Firefox(capabilities=desired_capabilities)
+        desired_capabilities = dict()
+        desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
+        desired_capabilities['unexpectedAlertBehaviour'] = "ignore"
+        driver = webdriver.Firefox(capabilities=desired_capabilities)
 
-        driver = webdriver.Chrome(os.path.dirname(os.path.abspath(__file__)) + r"\chromedriver.exe")
+        # driver = webdriver.Chrome(os.path.dirname(os.path.abspath(__file__)) + r"\chromedriver.exe")
 
-        driver.get("http://www.pgatour.com/players.html")
+        driver.get(href)
 
         names = driver.find_elements_by_css_selector(".name>a")
 
@@ -43,7 +44,8 @@ def lookup(filename):
         for name in names:
             _name_id += 1
             output_rec = list()
-            output_rec.append(_name_id)
+            output_rec.append(tour[:3] + str(_name_id))
+            output_rec.append(tour)
 
             _name = name.get_attribute('textContent')
 
@@ -56,13 +58,21 @@ def lookup(filename):
 
             write_output(filename, output_rec)
 
+        driver.close()
+
     except Exception, exc:
         print("EXCEPTION:")
         print("     ", str(exc))
         print("")
 
 
-project_directory = os.path.dirname(os.path.abspath(__file__))
-output_filename = project_directory + r"\player-names.csv"
+if __name__ == '__main__':
+    project_directory = os.path.dirname(os.path.abspath(__file__))
+    output_filename = project_directory + r"\data-output\player-names.csv"
 
-lookup(output_filename)
+    lookup(output_filename, "http://www.pgatour.com/players.html", "PGA", "w+")
+    lookup(output_filename, "http://www.pgatour.com/champions/players.html", "CHAMPIONS", "a+")
+    lookup(output_filename, "http://www.pgatour.com/webcom/players.html", "WEBCOM", "a+")
+    lookup(output_filename, "http://www.pgatour.com/canada/en_us/players.html", "CANADA", "a+")
+    lookup(output_filename, "http://www.pgatour.com/la/es/players.html", "LATINO", "a+")
+
